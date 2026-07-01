@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple CRUD Todo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 0 20px; }
+        .todo-form { display: flex; gap: 10px; margin-bottom: 20px; }
+        .todo-form input { flex: 1; padding: 8px; }
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #ddd; }
+        .todo-item.completed span { text-decoration: line-through; color: gray; }
+        .actions { display: flex; gap: 5px; }
+        button { cursor: pointer; padding: 5px 10px; }
+        .delete-btn { background-color: #ff4d4d; color: white; border: none; }
+    </style>
+</head>
+<body>
+
+    <h2>My To-Do List</h2>
+    
+    <div class="todo-form">
+        <input type="text" id="todo-input" placeholder="Add a new task...">
+        <button onclick="addTodo()">Add</button>
+    </div>
+
+    <div id="todo-list"></div>
+
+    <script>
+        const API_URL = '/api/todos';
+
+        // Fetch and render todos on load
+        document.addEventListener('DOMContentLoaded', fetchTodos);
+
+        async function fetchTodos() {
+            const res = await fetch(API_URL);
+            const todos = await res.json();
+            const list = document.getElementById('todo-list');
+            list.innerHTML = '';
+
+            todos.forEach(todo => {
+                const item = document.createElement('div');
+                item.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                item.innerHTML = `
+                    <span onclick="toggleComplete(${todo.id}, ${todo.completed})">${todo.text}</span>
+                    <div class="actions">
+                        <button onclick="editTodo(${todo.id}, '${todo.text}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteTodo(${todo.id})">X</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        async function addTodo() {
+            const input = document.getElementById('todo-input');
+            if (!input.value.trim()) return;
+
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: input.value })
+            });
+
+            input.value = '';
+            fetchTodos();
+        }
+
+        async function toggleComplete(id, currentStatus) {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ completed: !currentStatus })
+            });
+            fetchTodos();
+        }
+
+        async function editTodo(id, currentText) {
+            const newText = prompt('Edit your task:', currentText);
+            if (newText === null || !newText.trim()) return;
+
+            await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: newText })
+            });
+            fetchTodos();
+        }
+
+        async function deleteTodo(id) {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchTodos();
+        }
+    </script>
+</body>
+</html>
