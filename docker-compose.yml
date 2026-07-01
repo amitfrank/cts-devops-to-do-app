@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # שרת הפרוקסי (חזית המערכת)
   proxy:
     image: nginx:alpine
     container_name: nginx-proxy
@@ -14,7 +13,6 @@ services:
     depends_on:
       - web-app
 
-  # אפליקציית ה-Node.js
   web-app:
     build: ./app
     container_name: nodejs-app
@@ -27,7 +25,6 @@ services:
     depends_on:
       - db
 
-  # בסיס הנתונים MongoDB (מוגן ומבודד ברשת הפנימית)
   db:
     image: mongo:6.0-jammy
     container_name: mongodb-db
@@ -40,7 +37,6 @@ services:
     networks:
       - backend-net
 
-  # כלי הניהול הגרפי Mongo Express
   db-admin:
     image: mongo-express
     container_name: mongo-express-management
@@ -50,14 +46,14 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_USER}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_PASSWORD}
-      ME_CONFIG_MONGODB_SERVER: db # שם השירות של ה-DB ב-compose
+      ME_CONFIG_MONGODB_SERVER: db
     networks:
       - backend-net
     depends_on:
       - db
 
 volumes:
-  mongodata: # Volume ייעודי לשמירת המידע של MongoDB ביציאה מהקונטיינר
+  mongodata:
 
 networks:
   frontend-net:

@@ -9,28 +9,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. משיכת הקוד מהרפו
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. בדיקת קבצים אסורים (Secret Linting)
       - name: Verify No Secret .env File Exists
         run: |
           if [ -f .env ]; then
-            echo "❌ ERROR: Real .env file was committed to Git! Build failed for security reasons."
+            echo "ERROR: Real .env file was committed to Git! Build failed for security reasons."
             exit 1
           else
-            echo "✅ Success: No secret .env file detected in the repository."
+            echo "Success: No secret .env file detected in the repository."
           fi
 
-      # 3. בדיקת תקינות קוד ה-HTML (חיפוש תגית כותרת)
       - name: Check HTML Files for <title> Tag
         run: |
           echo "Scanning HTML files in app/public/..."
           for file in app/public/*.html; do
             if ! grep -q -i "<title>" "$file"; then
-              echo "❌ ERROR: Missing <title> tag in file: $file"
+              echo "ERROR: Missing <title> tag in file: $file"
               exit 1
             fi
           done
-          echo "✅ Success: All HTML files contain a <title> tag."
+          echo "Success: All HTML files contain a <title> tag."
