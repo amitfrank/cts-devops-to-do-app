@@ -51,6 +51,10 @@ app.delete('/api/todos/:id', (req, res) => {
     res.json({ message: 'Todo deleted successfully' });
 });
 
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'about.html'));
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
