@@ -1,4 +1,3 @@
-# 1. Base Image: Official, lightweight Node.js Alpine image (Requirement 1)
 FROM node:20-alpine
 WORKDIR /usr/src/app
 COPY --chown=node:node package*.json ./

@@ -60,7 +60,6 @@
         <script>
         const API_URL = "/api/todos";
 
-        // Fetch and render todos on load
         document.addEventListener("DOMContentLoaded", fetchTodos);
 
         async function fetchTodos() {
@@ -68,18 +67,16 @@
         const res = await fetch(API_URL);
         const data = await res.json();
 
-        // Safety check: If the server responded with an error code (like 500)
         if (!res.ok) {
-            console.error("❌ Backend Error Details:", data.error);
+            console.error("Backend Error Details:", data.error);
             const list = document.getElementById("todo-list");
             list.innerHTML = `<p style="color: red;">Server Error: ${data.error || 'Failed to fetch tasks'}</p>`;
-            return; // Exit early to prevent data.forEach from crashing
+            return;
         }
 
         const list = document.getElementById("todo-list");
         list.innerHTML = "";
 
-        // Now it's safe to loop because we know data is a valid array
         data.forEach((todo) => {
             const item = document.createElement("div");
             item.className = `todo-item ${todo.completed ? "completed" : ""}`;
@@ -93,7 +90,7 @@
             list.appendChild(item);
         });
     } catch (networkError) {
-        console.error("❌ Network error connecting to server:", networkError);
+        console.error("Network error connecting to server:", networkError);
     }
 }
 
